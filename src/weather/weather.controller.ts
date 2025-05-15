@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { WeatherResponseDto } from '../common/dto/weather-response.dto';
-import { WeatherQueryDto } from '../common/dto/weather-query.dto';
+import { WeatherQueryDto } from '../common/dto/weather-request.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('weather')
