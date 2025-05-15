@@ -18,11 +18,6 @@ services:
       - '3000:3000'
     env_file:
       - .env
-    command: >
-      sh -c "
-        npx typeorm-ts-node-esm migration:run --dataSource src/config/ormconfig.ts &&
-        node dist/main.js
-      "
 
 volumes:
   pgdata:
