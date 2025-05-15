@@ -31,12 +31,37 @@ export class SubscriptionService {
     });
 
     if (existing) {
-      this.logger.warn(
-        `Subscription already exists for email="${email}", city="${city}"`,
-      );
-      throw new ConflictException(
-        'Subscription already exists for this email and city',
-      );
+      if (existing.confirmed) {
+        this.logger.warn(
+          `Subscription already exists and confirmed for email="${email}", city="${city}"`,
+        );
+        throw new ConflictException(
+          'Subscription already exists for this email and city',
+        );
+      } else {
+        this.logger.log(
+          `Subscription exists but not confirmed for email="${email}", city="${city}". Resending confirmation email.`,
+        );
+
+        existing.confirmationToken = uuidv4();
+        existing.unsubscribeToken = uuidv4();
+        existing.frequency = frequency;
+
+        try {
+          await this.subscriptionRepo.save(existing);
+          this.logger.log(
+            `Updated subscription tokens for ${email} (${city}, ${frequency})`,
+          );
+        } catch (err) {
+          this.logger.error('Failed to update subscription', err);
+          throw new InternalServerErrorException(
+            'Failed to update subscription',
+          );
+        }
+
+        await this.sendConfirmationEmail(email, existing.confirmationToken);
+        return;
+      }
     }
 
     const confirmationToken = uuidv4();
