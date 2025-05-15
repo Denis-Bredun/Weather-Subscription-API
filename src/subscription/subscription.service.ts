@@ -1,0 +1,118 @@
+import {
+  Injectable,
+  ConflictException,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Subscription } from './entities/subscription.entity';
+import { SubscribeRequestDto } from '../common/dto/subscribe-request.dto';
+import { v4 as uuidv4 } from 'uuid';
+import * as nodemailer from 'nodemailer';
+
+@Injectable()
+export class SubscriptionService {
+  private readonly logger = new Logger(SubscriptionService.name);
+
+  constructor(
+    @InjectRepository(Subscription)
+    private readonly subscriptionRepo: Repository<Subscription>,
+  ) {}
+
+  async subscribe(dto: SubscribeRequestDto): Promise<void> {
+    const { email, city, frequency } = dto;
+    this.logger.log(
+      `Subscription request received for email="${email}", city="${city}", frequency="${frequency}"`,
+    );
+
+    const existing = await this.subscriptionRepo.findOne({
+      where: { email, city },
+    });
+
+    if (existing) {
+      this.logger.warn(
+        `Subscription already exists for email="${email}", city="${city}"`,
+      );
+      throw new ConflictException(
+        'Subscription already exists for this email and city',
+      );
+    }
+
+    const confirmationToken = uuidv4();
+    const unsubscribeToken = uuidv4();
+
+    const subscription = this.subscriptionRepo.create({
+      email,
+      city,
+      frequency,
+      confirmed: false,
+      confirmationToken,
+      unsubscribeToken,
+    });
+
+    try {
+      await this.subscriptionRepo.save(subscription);
+      this.logger.log(
+        `Saved new subscription for ${email} (${city}, ${frequency})`,
+      );
+    } catch (err) {
+      this.logger.error('Failed to save subscription', err);
+      throw new InternalServerErrorException('Failed to save subscription');
+    }
+
+    this.logger.log(`Sending confirmation email to ${email}`);
+    await this.sendConfirmationEmail(email, confirmationToken);
+  }
+
+  private async sendConfirmationEmail(
+    email: string,
+    token: string,
+  ): Promise<void> {
+    const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, API_BASE_URL } =
+      process.env;
+
+    this.logger.debug('SMTP configuration:', {
+      SMTP_HOST,
+      SMTP_PORT,
+      SMTP_USER,
+      SMTP_PASS: SMTP_PASS ? '****' : undefined, // не логируем пароль явно
+      API_BASE_URL,
+    });
+
+    try {
+      const transporter = nodemailer.createTransport({
+        host: SMTP_HOST,
+        port: Number(SMTP_PORT),
+        secure: false,
+        auth: {
+          user: SMTP_USER,
+          pass: SMTP_PASS,
+        },
+      });
+
+      const confirmUrl = `${API_BASE_URL}/api/confirm/${token}`;
+
+      await transporter.sendMail({
+        from: `"Weather App" <${SMTP_USER}>`,
+        to: email,
+        subject: 'Confirm your subscription',
+        html: `
+        <p>Hello!</p>
+        <p>Thank you for subscribing to our weather forecast service.</p>
+        <p>Please confirm your subscription by clicking the link below:</p>
+        <p><a href="${confirmUrl}">${confirmUrl}</a></p>
+        <p>If you did not subscribe to this service, please ignore this email.</p>
+        <p>Best regards,<br/>The Weather App Team</p>
+        `,
+      });
+
+      this.logger.log(`Confirmation email sent to ${email}`);
+    } catch (error) {
+      this.logger.error(`Failed to send confirmation email to ${email}`, error);
+      throw new InternalServerErrorException(
+        'Failed to send confirmation email',
+      );
+    }
+  }
+}
