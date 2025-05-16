@@ -26,4 +26,5 @@ RUN apk add --no-cache bash
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "./wait-for-it.sh postgres:5432 -- node -e 'console.log(\"Running DB migration...\")' && npx typeorm migration:run --dataSource dist/config/ormconfig.js && node dist/main"]
+CMD ["sh", "-c", "./wait-for-it.sh $DB_HOST:$DB_PORT -- node -e 'console.log(\"Running DB migration...\")' && npx typeorm migration:run --dataSource dist/config/ormconfig.js && node dist/main"]
+
