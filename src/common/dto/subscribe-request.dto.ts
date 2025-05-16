@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class SubscribeRequestDto {
   @ApiProperty({
     description: 'User email address for receiving weather updates',
-    example: 'user@example.com',
+    example: 'boris.dmitrovich@gmail.com',
   })
   @IsEmail()
   email: string;
