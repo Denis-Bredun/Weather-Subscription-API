@@ -5,8 +5,9 @@ import { Subscription } from '../subscription/entities/subscription.entity';
 import { WeatherService } from '../weather/weather.service';
 import { Repository } from 'typeorm';
 import { mock } from 'jest-mock-extended';
-import * as nodemailer from 'nodemailer';
+import { Logger } from '@nestjs/common';
 import { WeatherResponseDto } from '../common/dto/weather-response.dto';
+import * as nodemailer from 'nodemailer';
 
 jest.mock('nodemailer');
 
@@ -37,6 +38,11 @@ describe('TasksService', () => {
 
     service = module.get<TasksService>(TasksService);
     jest.clearAllMocks();
+
+    jest.spyOn(Logger.prototype, 'log').mockImplementation(() => {});
+    jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => {});
+    jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+    jest.spyOn(Logger.prototype, 'debug').mockImplementation(() => {});
   });
 
   describe('sendHourlyForecasts / sendDailyForecasts', () => {
