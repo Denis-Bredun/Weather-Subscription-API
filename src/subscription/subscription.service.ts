@@ -176,4 +176,27 @@ export class SubscriptionService {
 
     return 'Subscription confirmed successfully';
   }
+
+  async unsubscribe(token: string): Promise<string> {
+    if (!token || typeof token !== 'string') {
+      this.logger.warn(`Unsubscribe failed: invalid token`);
+      throw new BadRequestException('Invalid token');
+    }
+
+    const subscription = await this.subscriptionRepo.findOne({
+      where: { unsubscribeToken: token },
+    });
+
+    if (!subscription) {
+      this.logger.warn(`Unsubscribe failed: token not found (${token})`);
+      throw new NotFoundException('Token not found');
+    }
+
+    await this.subscriptionRepo.remove(subscription);
+
+    this.logger.log(
+      `Unsubscribed ${subscription.email} from ${subscription.city}`,
+    );
+    return 'Unsubscribed successfully';
+  }
 }

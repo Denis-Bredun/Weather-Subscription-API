@@ -47,4 +47,22 @@ export class SubscriptionController {
     const message = await this.subscriptionService.confirmSubscription(token);
     return { message };
   }
+
+  @Get('unsubscribe/:token')
+  @ApiOperation({ summary: 'Unsubscribe from weather updates' })
+  @ApiParam({
+    name: 'token',
+    description: 'Unsubscribe token',
+    required: true,
+    type: String,
+  })
+  @ApiResponse({ status: 200, type: ConfirmResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid token' })
+  @ApiResponse({ status: 404, description: 'Token not found' })
+  async unsubscribe(
+    @Param('token') token: string,
+  ): Promise<ConfirmResponseDto> {
+    const message = await this.subscriptionService.unsubscribe(token);
+    return { message };
+  }
 }

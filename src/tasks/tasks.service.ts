@@ -10,8 +10,6 @@ import * as nodemailer from 'nodemailer';
 @Injectable()
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
-  private weatherCache = new Map<string, WeatherResponseDto>();
-  private inProgress = new Map<string, Promise<WeatherResponseDto>>();
 
   constructor(
     @InjectRepository(Subscription)
@@ -29,31 +27,6 @@ export class TasksService {
     await this.processForecasts('daily');
   }
 
-  private async getWeatherWithMemo(city: string): Promise<WeatherResponseDto> {
-    const cached = this.weatherCache.get(city);
-    if (cached) {
-      this.logger.debug(`Cache hit for city=${city}`);
-      return cached;
-    }
-
-    const inflight = this.inProgress.get(city);
-    if (inflight) {
-      this.logger.debug(`Waiting for in-progress request for city=${city}`);
-      return inflight;
-    }
-
-    const promise = this.weatherService.getWeather(city);
-    this.inProgress.set(city, promise);
-
-    try {
-      const result = await promise;
-      this.weatherCache.set(city, result);
-      return result;
-    } finally {
-      this.inProgress.delete(city);
-    }
-  }
-
   private async processForecasts(frequency: 'daily' | 'hourly') {
     this.logger.log(`Processing ${frequency} forecasts...`);
 
@@ -61,9 +34,17 @@ export class TasksService {
       where: { confirmed: true, frequency },
     });
 
+    const weatherCache = new Map<string, WeatherResponseDto>();
+
     for (const sub of subscriptions) {
       try {
-        const weather = await this.getWeatherWithMemo(sub.city);
+        let weather = weatherCache.get(sub.city);
+
+        if (!weather) {
+          weather = await this.weatherService.getWeather(sub.city);
+          weatherCache.set(sub.city, weather);
+        }
+
         await this.sendForecastEmail(sub.email, sub.city, weather);
       } catch (err) {
         this.logger.error(
@@ -79,7 +60,20 @@ export class TasksService {
     city: string,
     weather: WeatherResponseDto,
   ) {
-    const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
+    const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, APP_BASE_URL } =
+      process.env;
+
+    const subscription = await this.subscriptionRepo.findOne({
+      where: { email, city, confirmed: true },
+      select: ['unsubscribeToken'],
+    });
+
+    if (!subscription) {
+      this.logger.warn(`No active subscription found for ${email} (${city})`);
+      return;
+    }
+
+    const unsubscribeLink = `${APP_BASE_URL}/api/unsubscribe/${encodeURIComponent(subscription.unsubscribeToken)}`;
 
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
@@ -92,15 +86,16 @@ export class TasksService {
     });
 
     const html = `
-      <p>Hello!</p>
-      <p>Here's the current weather in <b>${city}</b>:</p>
-      <ul>
-        <li><b>Temperature:</b> ${weather.temperature} °C</li>
-        <li><b>Humidity:</b> ${weather.humidity}%</li>
-        <li><b>Description:</b> ${weather.description}</li>
-      </ul>
-      <p>Have a nice day!</p>
-    `;
+    <p>Hello!</p>
+    <p>Here's the current weather in <b>${city}</b>:</p>
+    <ul>
+      <li><b>Temperature:</b> ${weather.temperature} °C</li>
+      <li><b>Humidity:</b> ${weather.humidity}%</li>
+      <li><b>Description:</b> ${weather.description}</li>
+    </ul>
+    <p>If you no longer wish to receive updates, you can <a href="${unsubscribeLink}">unsubscribe here</a>.</p>
+    <p>Have a nice day!</p>
+  `;
 
     await transporter.sendMail({
       from: `"Weather App" <${SMTP_USER}>`,
