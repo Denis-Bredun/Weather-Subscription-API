@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { WeatherService } from '../weather/weather.service';
 import { Subscription } from './entities/subscription.entity';
 import { SubscribeRequestDto } from '../common/dto/subscribe-request.dto';
 import { v4 as uuidv4 } from 'uuid';
@@ -20,6 +21,7 @@ export class SubscriptionService {
   constructor(
     @InjectRepository(Subscription)
     private readonly subscriptionRepo: Repository<Subscription>,
+    private readonly weatherService: WeatherService,
   ) {}
 
   async subscribe(dto: SubscribeRequestDto): Promise<void> {
@@ -27,6 +29,13 @@ export class SubscriptionService {
     this.logger.log(
       `Subscription request received for email="${email}", city="${city}", frequency="${frequency}"`,
     );
+
+    try {
+      await this.weatherService.getWeather(city);
+    } catch {
+      this.logger.warn(`Invalid city in subscription request: "${city}"`);
+      throw new BadRequestException('Invalid city name');
+    }
 
     const existing = await this.subscriptionRepo.findOne({
       where: { email, city },
