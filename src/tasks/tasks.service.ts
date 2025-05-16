@@ -60,7 +60,7 @@ export class TasksService {
     city: string,
     weather: WeatherResponseDto,
   ) {
-    const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, APP_BASE_URL } =
+    const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, API_BASE_URL } =
       process.env;
 
     const subscription = await this.subscriptionRepo.findOne({
@@ -73,7 +73,7 @@ export class TasksService {
       return;
     }
 
-    const unsubscribeLink = `${APP_BASE_URL}/api/unsubscribe/${encodeURIComponent(subscription.unsubscribeToken)}`;
+    const unsubscribeLink = `${API_BASE_URL}/api/unsubscribe/${encodeURIComponent(subscription.unsubscribeToken)}`;
 
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
