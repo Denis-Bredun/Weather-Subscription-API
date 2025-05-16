@@ -17,6 +17,11 @@ export class TasksService {
     private readonly weatherService: WeatherService,
   ) {}
 
+  @Cron(CronExpression.EVERY_10_SECONDS)
+  async sendTest() {
+    this.logger.log('⏰ Cron job triggered every 10 seconds');
+  }
+
   @Cron(CronExpression.EVERY_HOUR)
   async sendHourlyForecasts() {
     await this.processForecasts('hourly');
