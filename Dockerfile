@@ -18,6 +18,7 @@ COPY --from=builder /app/.env ./.env
 COPY --from=builder /app/dist/config/ormconfig.js ./dist/config/ormconfig.js
 COPY --from=builder /app/dist/migrations ./dist/migrations
 COPY --from=builder /app/dist/subscription/entities ./dist/subscription/entities
+COPY --from=builder /app/public ./public
 
 COPY wait-for-it.sh ./wait-for-it.sh
 RUN chmod +x ./wait-for-it.sh
@@ -26,5 +27,5 @@ RUN apk add --no-cache bash
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "./wait-for-it.sh postgres:5432 -- node -e 'console.log(\"Running DB migration...\")' && npx typeorm migration:run --dataSource dist/config/ormconfig.js && node dist/main"]
+CMD ["sh", "-c", "./wait-for-it.sh $DB_HOST:$DB_PORT -- node -e 'console.log(\"Running DB migration...\")' && npx typeorm migration:run --dataSource dist/config/ormconfig.js && node dist/main"]
 
