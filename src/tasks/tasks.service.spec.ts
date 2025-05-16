@@ -37,12 +37,15 @@ describe('TasksService', () => {
     }).compile();
 
     service = module.get<TasksService>(TasksService);
-    jest.clearAllMocks();
 
     jest.spyOn(Logger.prototype, 'log').mockImplementation(() => {});
     jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => {});
     jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
     jest.spyOn(Logger.prototype, 'debug').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('sendHourlyForecasts / sendDailyForecasts', () => {
@@ -91,7 +94,7 @@ describe('TasksService', () => {
 
       await (service as any).processForecasts('daily');
 
-      expect(weatherService.getWeather).toHaveBeenCalledTimes(1); // только один вызов, второй попадёт в кэш
+      expect(weatherService.getWeather).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledTimes(2);
     });
 
