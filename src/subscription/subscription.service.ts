@@ -112,7 +112,7 @@ export class SubscriptionService {
       SMTP_HOST,
       SMTP_PORT,
       SMTP_USER,
-      SMTP_PASS: SMTP_PASS ? '****' : undefined, // не логируем пароль явно
+      SMTP_PASS: SMTP_PASS ? '****' : undefined,
       API_BASE_URL,
     });
 
