@@ -17,7 +17,7 @@ export class TasksService {
     private readonly weatherService: WeatherService,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_HOUR)
   async sendHourlyForecasts() {
     await this.processForecasts('hourly');
   }
