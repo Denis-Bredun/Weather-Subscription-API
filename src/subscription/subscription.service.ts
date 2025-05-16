@@ -1,6 +1,8 @@
 import {
   Injectable,
   ConflictException,
+  NotFoundException,
+  BadRequestException,
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
@@ -139,5 +141,39 @@ export class SubscriptionService {
         'Failed to send confirmation email',
       );
     }
+  }
+
+  async confirmSubscription(token: string): Promise<string> {
+    if (!token || typeof token !== 'string') {
+      this.logger.warn(`Confirm subscription failed: invalid token provided`);
+      throw new BadRequestException('Invalid token');
+    }
+
+    const subscription = await this.subscriptionRepo.findOne({
+      where: { confirmationToken: token },
+    });
+
+    if (!subscription) {
+      this.logger.warn(
+        `Confirm subscription failed: token not found (${token})`,
+      );
+      throw new NotFoundException('Token not found');
+    }
+
+    if (subscription.confirmed) {
+      this.logger.log(
+        `Subscription already confirmed for email="${subscription.email}"`,
+      );
+      return 'Subscription already confirmed';
+    }
+
+    subscription.confirmed = true;
+    await this.subscriptionRepo.save(subscription);
+
+    this.logger.log(
+      `Subscription confirmed for email="${subscription.email}", city="${subscription.city}"`,
+    );
+
+    return 'Subscription confirmed successfully';
   }
 }
