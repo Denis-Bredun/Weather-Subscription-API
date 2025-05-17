@@ -21,11 +21,10 @@ COPY --from=builder /app/dist/subscription/entities ./dist/subscription/entities
 COPY --from=builder /app/public ./public
 
 COPY wait-for-it.sh ./wait-for-it.sh
-RUN chmod +x ./wait-for-it.sh
-
-RUN apk add --no-cache bash
+RUN apk add --no-cache bash dos2unix \
+    && dos2unix ./wait-for-it.sh \
+    && chmod +x ./wait-for-it.sh
 
 EXPOSE 3000
 
 CMD ["sh", "-c", "./wait-for-it.sh $DB_HOST:$DB_PORT -- node -e 'console.log(\"Running DB migration...\")' && npx typeorm migration:run --dataSource dist/config/ormconfig.js && node dist/main"]
-
