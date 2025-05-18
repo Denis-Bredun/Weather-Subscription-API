@@ -2,6 +2,35 @@
 
 A weather subscription service built with **NestJS** that allows users to subscribe for regular weather updates by email for a selected city. This project is implemented as part of the Software Engineering School 5.0 case task.
 
+## 📚 Table of Contents
+
+- [Weather Subscription API](#weather-subscription-api)
+  - [📚 Table of Contents](#-table-of-contents)
+  - [🌤️ Features](#️-features)
+  - [📦 Tech Stack](#-tech-stack)
+  - [🚀 Live Demo](#-live-demo)
+  - [📑 API Endpoints](#-api-endpoints)
+  - [🔧 Installation \& Local Development](#-installation--local-development)
+    - [1. Clone the Repository](#1-clone-the-repository)
+    - [2. Configure Environment Variables](#2-configure-environment-variables)
+    - [3. Start the App with Docker](#3-start-the-app-with-docker)
+    - [4. Access the Application](#4-access-the-application)
+  - [🧪 Testing](#-testing)
+  - [🏗️ Architecture \& Design Notes](#️-architecture--design-notes)
+    - [Main Modules](#main-modules)
+    - [Core Design Features](#core-design-features)
+    - [App Bootstrap Flow](#app-bootstrap-flow)
+    - [Key Dependencies](#key-dependencies)
+  - [🐳 Docker Overview](#-docker-overview)
+    - [🧱 Components](#-components)
+    - [🚀 Usage](#-usage)
+    - [📦 Features](#-features)
+    - [🌐 Default Ports](#-default-ports)
+  - [🧪 Known Limitations / Future Improvements](#-known-limitations--future-improvements)
+  - [📬 Contact](#-contact)
+
+---
+
 ## 🌤️ Features
 
 - Subscribe to weather updates (daily or hourly) by email
