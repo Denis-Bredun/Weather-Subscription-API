@@ -1,98 +1,233 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Weather Subscription API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A weather subscription service built with **NestJS** that allows users to subscribe for regular weather updates by email for a selected city. This project is implemented as part of the Software Engineering School 5.0 case task.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🌤️ Features
 
-## Description
+- Subscribe to weather updates (daily or hourly) by email
+- Confirm subscription via unique tokenized email link
+- Unsubscribe at any time
+- Get real-time weather data (temperature, humidity, description)
+- Swagger API documentation
+- Fully dockerized setup
+- Scheduled email notifications via cron
+- Functional tests included
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## 📦 Tech Stack
 
-```bash
-$ npm install
-```
+- **Backend**: NestJS, TypeORM
+- **Database**: PostgreSQL
+- **Email**: Nodemailer
+- **Scheduler**: @nestjs/schedule
+- **Weather API**: [weatherapi.com](https://www.weatherapi.com/)
+- **Testing**: Jest, Supertest
+- **Containerization**: Docker, Docker Compose
+- **Deployment**: Render.com
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## 🚀 Live Demo
 
-# watch mode
-$ npm run start:dev
+- **API**: [https://weather-subscription-api-h5i1.onrender.com](https://weather-subscription-api-h5i1.onrender.com)
+- **HTML Subscription Page**: [https://weather-subscription-api-h5i1.onrender.com/subscribe.html](https://weather-subscription-api-h5i1.onrender.com/subscribe.html)
+- **Swagger UI**: [https://weather-subscription-api-h5i1.onrender.com/api/docs](https://weather-subscription-api-h5i1.onrender.com/api/docs)
 
-# production mode
-$ npm run start:prod
-```
+---
 
-## Run tests
+## 📑 API Endpoints
 
-```bash
-# unit tests
-$ npm run test
+| Method | Endpoint                      | Description                                 |
+|--------|-------------------------------|---------------------------------------------|
+| GET    | `/api/weather?city={city}`    | Get current weather for a given city        |
+| POST   | `/api/subscribe`              | Subscribe email to weather updates          |
+| GET    | `/api/confirm/{token}`        | Confirm the subscription via email token    |
+| GET    | `/api/unsubscribe/{token}`    | Unsubscribe from weather notifications      |
 
-# e2e tests
-$ npm run test:e2e
+> 📌 API contract strictly follows the `swagger.yaml` provided with the assignment.
 
-# test coverage
-$ npm run test:cov
-```
+---
 
-## Deployment
+## 🔧 Installation & Local Development
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Before you start, make sure the following tools are installed on your machine:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+| Tool        | Version    | Download link |
+|-------------|------------|----------------|
+| **Git**     | any        | [https://git-scm.com/](https://git-scm.com/) |
+| **Node.js** | >= 20.x    | [https://nodejs.org/](https://nodejs.org/) |
+| **Docker**  | Desktop v4+| [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop) |
+| **npm**     | bundled with Node.js | — |
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+> ✅ Recommended: Use Docker to simplify local setup and avoid installing PostgreSQL manually.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+### 1. Clone the Repository
 
-Check out a few resources that may come in handy when working with NestJS:
+Run the following commands in your terminal:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- `git clone https://github.com/Denis-Bredun/Weather-Subscription-API.git`
+- `cd Weather-Subscription-API`
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 2. Configure Environment Variables
 
-## Stay in touch
+Copy the example environment file:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- `cp .env.example .env`
 
-## License
+Update the `.env` file with your API key (e.g., from weatherapi.com).
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
+
+### 3. Start the App with Docker
+
+To build and run the app using Docker Compose:
+
+- `docker-compose up --build`
+
+This will:
+- Start the PostgreSQL database
+- Run database migrations automatically
+- Launch the API at `http://localhost:3000`
+
+---
+
+### 4. Access the Application
+
+- **Swagger UI**: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+- **Subscription Page**: [http://localhost:3000/subscribe.html](http://localhost:3000/subscribe.html)
+- **Example Endpoint**: `GET /api/weather?city=Kyiv`
+
+---
+
+## 🧪 Testing
+
+The project uses [Jest](https://jestjs.io/) for testing.
+
+To run all tests, use:
+
+- `npm test`
+
+This command is configured as:
+
+- `jest --verbose --silent=false --coverage`
+
+It runs all tests with:
+- Verbose output
+- Code coverage report
+- Non-silent mode (logs and console output are shown)
+
+All tests are written using Jest and stored next to the source files in `src/`.  
+There are **no** end-to-end tests in this project.
+
+Mocking is done via [`jest-mock-extended`](https://www.npmjs.com/package/jest-mock-extended).
+
+---
+
+## 🏗️ Architecture & Design Notes
+
+This project is built with [NestJS 11](https://docs.nestjs.com) and follows modular design principles with strong separation of concerns.
+
+### Main Modules
+- **WeatherModule**: Fetches real-time weather data using `axios`
+- **SubscriptionModule**: Handles subscribing, confirming and unsubscribing emails
+- **TasksModule**: Periodically sends weather emails via cron jobs
+
+### Core Design Features
+- 📦 Dependency injection via NestJS's DI container
+- 🔁 Scheduled jobs with `@nestjs/schedule` and `node-cron`
+- 📬 Email sending via `nodemailer`
+- 🌍 Weather data fetching via HTTP using `axios`
+- 🧾 API documentation via `@nestjs/swagger` (`/api/docs`)
+- ✅ Input validation using `class-validator` and `ValidationPipe`
+- 🧱 PostgreSQL with `TypeORM` and `typeorm` CLI for migrations
+- 🔒 UUID-based token confirmation for subscriptions
+- 🗂️ Static assets served from `public/` (`subscribe.html`, etc.)
+
+### App Bootstrap Flow
+- Loads `.env` config globally using `@nestjs/config`
+- Registers TypeORM with custom `ormconfig.ts`
+- Initializes and documents the API using Swagger
+- Applies global validation pipe (`whitelist`, `transform`, etc.)
+- Serves static HTML pages via `NestExpressApplication`
+
+### Key Dependencies
+
+**Runtime:**
+- `@nestjs/core`, `@nestjs/common`, `@nestjs/platform-express`
+- `@nestjs/typeorm`, `typeorm`, `pg`
+- `@nestjs/schedule`, `node-cron`
+- `@nestjs/swagger`, `swagger-ui-express`
+- `class-validator`, `class-transformer`
+- `axios`, `nodemailer`, `uuid`, `dotenv`
+
+**Dev Tools:**
+- `jest`, `ts-jest`, `jest-mock-extended`
+- `eslint`, `prettier`, `typescript`, `@nestjs/testing`
+- `ts-node`, `@swc/cli` for fast builds
+
+---
+
+## 🐳 Docker Overview
+
+This project is fully dockerized using multi-stage builds for optimized performance and portability.
+
+### 🧱 Components
+
+- **Dockerfile** — builds, compiles, and runs the NestJS application  
+- **docker-compose.yml** — defines services for the API and PostgreSQL  
+- **wait-for-it.sh** — ensures PostgreSQL is ready before the app starts and migrations run
+
+### 🚀 Usage
+
+- **Start the entire stack:**  
+  - `docker-compose up --build`
+
+- **Stop and remove containers, networks, and volumes:**  
+  - `docker-compose down -v`
+
+- **Fully remove everything (including images):**  
+  - `docker-compose down -v --rmi all`
+
+- **Restart from scratch:**  
+  - `docker-compose down -v --rmi all && docker-compose up --build`
+
+### 📦 Features
+
+- **Automatic migration execution on container startup:**  
+  - `npx typeorm migration:run --dataSource dist/config/ormconfig.js`
+
+- **PostgreSQL data** is persisted in a named Docker volume: `pgdata`
+
+### 🌐 Default Ports
+
+- **API:** http://localhost:3000  
+- **Swagger Docs:** http://localhost:3000/api/docs  
+- **Subscribe Page:** http://localhost:3000/subscribe.html  
+- **PostgreSQL:** localhost:5432
+
+---
+
+## 🧪 Known Limitations / Future Improvements
+
+- **No e2e tests yet** — only core logic is covered with tests
+- **No rate limiting or CAPTCHA** — could be useful to prevent abuse of the subscription form
+- **No unsubscribe confirmation page** — currently returns plain JSON; could be enhanced with an HTML page
+- **Basic error pages** — errors return raw JSON, consider customizing error responses for better UX
+- **No retry logic for failed emails** — mailer currently logs failures without retries
+- **Token expiration** — not implemented for confirmation/unsubscribe tokens
+- **i18n support** — responses and emails are in English only
+
+---
+
+## 📬 Contact
+
+For feedback, bug reports, or feature requests:
+
+- **GitHub:** [github.com/Denis-Bredun/Weather-Subscription-API](https://github.com/Denis-Bredun/Weather-Subscription-API)
+- **Author:** Denis Bredun  
+- **Email:** bredun.denis@gmail.com
