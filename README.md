@@ -77,14 +77,15 @@ Run the following commands in your terminal:
 
 Copy the example environment file:
 
-- `cp .env.example .env`
+- `copy .env.example .env`
 
-Update the `.env` file with your API key (e.g., from weatherapi.com).
+Update the `.env` file with your configuration — including PostgreSQL credentials, SMTP settings, and your weather API key (e.g., from weatherapi.com).
 
 ---
 
 ### 3. Start the App with Docker
 
+Before starting, make sure Docker Desktop is running on your machine.
 To build and run the app using Docker Compose:
 
 - `docker-compose up --build`
@@ -107,6 +108,10 @@ This will:
 ## 🧪 Testing
 
 The project uses [Jest](https://jestjs.io/) for testing.
+
+Before running tests for the first time, make sure to install dependencies:
+
+- `npm install`
 
 To run all tests, use:
 
@@ -228,6 +233,6 @@ This project is fully dockerized using multi-stage builds for optimized performa
 
 For feedback, bug reports, or feature requests:
 
-- **GitHub:** [github.com/Denis-Bredun/Weather-Subscription-API](https://github.com/Denis-Bredun/Weather-Subscription-API)
+- **GitHub Issues:** [github.com/Denis-Bredun/Weather-Subscription-API/issues](https://github.com/Denis-Bredun/Weather-Subscription-API/issues)
 - **Author:** Denis Bredun  
 - **Email:** bredun.denis@gmail.com
